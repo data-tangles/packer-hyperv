@@ -46,7 +46,7 @@
 
     # Variables
     $template_file="./templates/hv_{{ packer_template }}.pkr.hcl"
-    $var_file="C:\git\packer-vars\variables\packer-hyperv\variables_{{ packer_image }}.pkvars.hcl"
+    $var_file="C:\git\packer-vars\variables\packer-hyperv\variables_{{ packer_template }}.pkvars.hcl"
     $packer_log=0
 
     if ((Test-Path -Path "$template_file") -and (Test-Path -Path "$var_file")) {
