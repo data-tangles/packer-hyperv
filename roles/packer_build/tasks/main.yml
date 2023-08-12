@@ -25,7 +25,7 @@
   args:
     chdir: C:\git\packer-hyperv
 
-- name: Clone Packer Hyper-V Repo
+- name: Clone Packer Vars Repo
   ansible.windows.win_shell: |
     git clone https://qman_being:{{ pat }}@github.com/qman-being/packer-vars.git
   args:
