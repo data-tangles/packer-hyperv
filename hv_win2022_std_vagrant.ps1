@@ -5,7 +5,7 @@ $startDTM = (Get-Date)
 
 # Variables
 $template_file="./templates/hv_win2022_g2_vagrant.pkr.hcl"
-$var_file="./variables/variables_win2022_std.pkvars.hcl"
+$var_file="C:\git\packer-vars\variables\packer-hyperv\variables_win2022_std.pkvars.hcl"
 $machine="Windows Server 2022 Standard Gen-2 Vagrant"
 $vbox="./vbox/packer-windows-2022-std-g2.box"
 $vbox_checksum="./vbox/packer-windows-2022-std-g2.box.sha256"

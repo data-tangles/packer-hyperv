@@ -5,7 +5,7 @@ $startDTM = (Get-Date)
 
 # Variables
 $template_file="./templates/hv_win2022_g2.pkr.hcl"
-$var_file="./variables/variables_win2022_dc.pkvars.hcl"
+$var_file="C:\git\packer-vars\variables\packer-hyperv\variables_win2022_dc.pkvars.hcl"
 $machine="Windows Server 2022 Datacenter Gen-2"
 $packer_log=0
 

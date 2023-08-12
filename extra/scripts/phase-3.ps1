@@ -1,6 +1,6 @@
 # Phase 3 - stuff which is not generic
 # Uncomment next line to skip this
-# exit 0
+exit 0
 param(
     [Parameter()]
     [ValidateNotNullOrEmpty()]

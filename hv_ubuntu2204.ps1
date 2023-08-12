@@ -5,7 +5,7 @@ $startDTM = (Get-Date)
 
 # Variables
 $template_file="./templates/hv_ubuntu2204_g2.pkr.hcl"
-$var_file="./variables/variables_ubuntu2204.pkvars.hcl"
+$var_file="C:\git\packer-vars\variables\packer-hyperv\variables_ubuntu2204.pkvars.hcl"
 $machine="Ubuntu 22.04"
 $packer_log=0
 

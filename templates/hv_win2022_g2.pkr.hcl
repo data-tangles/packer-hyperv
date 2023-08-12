@@ -214,12 +214,6 @@ provisioner "powershell" {
   provisioner "powershell" {
     elevated_password = "password"
     elevated_user     = "Administrator"
-    script            = "./extra/scripts/phase-5a.software.ps1"
-  }
-
-  provisioner "powershell" {
-    elevated_password = "password"
-    elevated_user     = "Administrator"
     script            = "./extra/scripts/phase-5d.windows-compress.ps1"
   }
 
