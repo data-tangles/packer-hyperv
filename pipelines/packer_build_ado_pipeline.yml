@@ -42,7 +42,7 @@ stages:
         displayName: Packer Binary Install
         inputs:
           ansibleInterface: 'agentMachine'
-          playbookPathOnAgentMachine: '$(System.DefaultWorkingDirectory)/packer_install.yml'
+          playbookPathOnAgentMachine: '$(System.DefaultWorkingDirectory)/packer_build.yml'
           inventoriesAgentMachine: 'file'
           inventoryFileOnAgentMachine: '/ansible/inventory/prod/hyper_v.ini'
           args: '--extra-vars "nodes=${{ parameters.nodeSelection }} packer_image=${{ parameters.packerBuildImage }}"'
