@@ -18,13 +18,20 @@ parameters:
   - host_02
 - name: packerBuildImage
   displayName: Packer Build Image
-  default: hv_win2022_dc
+  default: win2022_dc
   values:
-  - hv_ubuntu2204
-  - hv_win2022_dc_vagrant
-  - hv_win2022_dc
-  - hv_win2022_std_vagrant
-  - hv_win2022_std
+  - ubuntu2204
+  - win2022_dc_vagrant
+  - win2022_dc
+  - win2022_std_vagrant
+  - win2022_std
+- name: packerTemplate
+  displayName: Packer Template
+  default: win2022_g2
+  values:
+    - ubuntu2204_g2
+    - win2022_g2_vagrant
+    - win2022_g2
 
 trigger:
 - none
@@ -48,5 +55,5 @@ stages:
           playbookPathOnAgentMachine: '$(System.DefaultWorkingDirectory)/packer_build.yml'
           inventoriesAgentMachine: 'file'
           inventoryFileOnAgentMachine: '/ansible/inventory/prod/hyper_v.ini'
-          args: '--extra-vars "nodes=${{ parameters.nodeSelection }} packer_image=${{ parameters.packerBuildImage }} pat=$(pat)"'
+          args: '--extra-vars "nodes=${{ parameters.nodeSelection }} packer_image=hv_${{ parameters.packerBuildImage }} packer_template=${{ parameters.packerTemplates }} pat=$(pat)"'
           failOnStdErr: false
