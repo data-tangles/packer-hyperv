@@ -1,3 +1,6 @@
+variables:
+- group: packer-hyperv-variables
+
 parameters:
 - name: agentPool
   displayName: 'Agent Pool Selection'
@@ -45,5 +48,5 @@ stages:
           playbookPathOnAgentMachine: '$(System.DefaultWorkingDirectory)/packer_install.yml'
           inventoriesAgentMachine: 'file'
           inventoryFileOnAgentMachine: '/ansible/inventory/prod/hyper_v.ini'
-          args: '--extra-vars "nodes=${{ parameters.nodeSelection }} packer_image=${{ parameters.packerBuildImage }}"'
+          args: '--extra-vars "nodes=${{ parameters.nodeSelection }} packer_image=${{ parameters.packerBuildImage }} pat=$(pat)"'
           failOnStdErr: false
