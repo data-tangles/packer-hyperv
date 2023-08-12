@@ -55,5 +55,5 @@ stages:
           playbookPathOnAgentMachine: '$(System.DefaultWorkingDirectory)/packer_build.yml'
           inventoriesAgentMachine: 'file'
           inventoryFileOnAgentMachine: '/ansible/inventory/prod/hyper_v.ini'
-          args: '--extra-vars "nodes=${{ parameters.nodeSelection }} packer_image=hv_${{ parameters.packerBuildImage }} packer_template=${{ parameters.packerTemplates }} pat=$(pat)"'
+          args: '--extra-vars "nodes=${{ parameters.nodeSelection }} packer_image=hv_${{ parameters.packerBuildImage }} packer_template=${{ parameters.packerTemplate }} pat=$(pat)"'
           failOnStdErr: false
