@@ -3,6 +3,11 @@
     name: git
     state: present
 
+- name: Install Packer
+  win_chocolatey:
+    name: packer
+    state: present
+
 - name: Create Git directory
   ansible.windows.win_file:
     path: C:\git\
@@ -34,11 +39,21 @@
 
 - name: Run Packer build
   ansible.windows.win_shell: |
-    {{ packer_image }}.ps1
+    .\{{ packer_image }}.ps1
   args:
     chdir: C:\git\packer-hyperv
 
 - name: Remove Git directory
   ansible.windows.win_file:
     path: C:\git
+    state: absent
+
+- name: Remove git
+  win_chocolatey:
+    name: git
+    state: absent
+
+- name: Install Packer
+  win_chocolatey:
+    name: packer
     state: absent
