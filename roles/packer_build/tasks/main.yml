@@ -1,0 +1,38 @@
+- name: Create Packer Git directory
+  ansible.windows.win_file:
+    path: C:\git\packer-hyperv
+    state: directory
+
+- name: Clone Packer Hyper-V Git Repo
+  ansible.builtin.git:
+    repo: https://github.com/qman-being/packer-hyperv.git
+    dest: C:\git\packer-hyperv
+    single_branch: yes
+    version: master
+
+- name: Create Packer Vars Git directory
+  ansible.windows.win_file:
+    path: C:\git\packer-vars
+    state: directory
+
+- name: Clone Packer Vars Git Repo
+  ansible.builtin.git:
+    repo: https://github.com/qman-being/packer-vars.git
+    dest: C:\git\packer-vars
+    single_branch: yes
+    version: master
+
+- name: Install required Packer plugins
+  ansible.windows.win_shell: |
+    packer init --upgrade config.pkr.hcl
+  args:
+    chdir: C:\git\packer-hyperv
+
+- name: Run Packer build
+  ansible.windows.win_shell: |
+    {{ packer_image }}.ps1
+
+- name: Remove Git directory
+  ansible.windows.win_file:
+    path: C:\git
+    state: absent

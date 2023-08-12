@@ -1,0 +1,49 @@
+parameters:
+- name: agentPool
+  displayName: 'Agent Pool Selection'
+  type: string
+  default: Self-Hosted
+  values:
+  - Self-Hosted
+  - Oracle-Cloud
+- name: nodeSelection
+  displayName: 'Ansible Node Selection'
+  type: string
+  default: host_01
+  values:
+  - host_01
+  - host_02
+- name: packerBuildImage
+  displayName: Packer Build Image
+  default: hv_win2022_dc
+  values:
+  - hv_ubuntu2204
+  - hv_win2022_dc_vagrant
+  - hv_win2022_dc
+  - hv_win2022_std_vagrant
+  - hv_win2022_std
+
+trigger:
+- none
+
+stages:
+
+- stage: 'packerbuild'
+  dependsOn: []
+  displayName: 'Packer Build'
+
+  jobs:
+    - job: 'packerbuild'
+      displayName: 'Packer Build'
+      pool: ${{ parameters.agentPool }}
+
+      steps:
+      - task: Ansible@0
+        displayName: Packer Binary Install
+        inputs:
+          ansibleInterface: 'agentMachine'
+          playbookPathOnAgentMachine: '$(System.DefaultWorkingDirectory)/packer_install.yml'
+          inventoriesAgentMachine: 'file'
+          inventoryFileOnAgentMachine: '/ansible/inventory/prod/hyper_v.ini'
+          args: '--extra-vars "nodes=${{ parameters.nodeSelection }} packer_image=${{ parameters.packerBuildImage }}"'
+          failOnStdErr: false
