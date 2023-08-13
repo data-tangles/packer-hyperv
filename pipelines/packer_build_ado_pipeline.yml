@@ -32,6 +32,12 @@ parameters:
     - ubuntu2204_g2
     - win2022_g2_vagrant
     - win2022_g2
+- name: windowsKeySelection
+  displayName: Windows Key Selection
+  default: $(host_01_key)
+  values:
+    - $(host_01_key)
+    - $(host_02_key)
 
 trigger:
 - none
@@ -55,5 +61,9 @@ stages:
           playbookPathOnAgentMachine: '$(System.DefaultWorkingDirectory)/packer_build.yml'
           inventoriesAgentMachine: 'file'
           inventoryFileOnAgentMachine: '/ansible/inventory/prod/hyper_v.ini'
-          args: '--extra-vars "nodes=${{ parameters.nodeSelection }} packer_image=${{ parameters.packerBuildImage }} packer_template=${{ parameters.packerTemplate }} pat=$(pat)"'
+          args: '--extra-vars "nodes=${{ parameters.nodeSelection }} packer_image=${{ parameters.packerBuildImage }} packer_template=${{ parameters.packerTemplate }} pat=$PAT  product_key=$PRODUCT_KEY packer_admin_password=$PACKER_ADMIN_PASSWORD"'
           failOnStdErr: false
+        env:
+          PAT: $(pat)
+          PRODUCT_KEY: ${{ parameters.windowsKeySelection }}
+          PACKER_ADMIN_PASSWORD: $(packer_admin_password)
