@@ -214,6 +214,12 @@ provisioner "powershell" {
   provisioner "powershell" {
     elevated_password = "{{ packer_admin_password }}"
     elevated_user     = "Administrator"
+    script            = "./extra/scripts/phase-5.ansible-config.ps1"
+  }
+
+  provisioner "powershell" {
+    elevated_password = "{{ packer_admin_password }}"
+    elevated_user     = "Administrator"
     script            = "./extra/scripts/phase-5d.windows-compress.ps1"
   }
 
