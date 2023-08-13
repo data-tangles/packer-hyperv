@@ -103,6 +103,8 @@ source "hyperv-iso" "vm" {
   winrm_password        = "{{ packer_admin_password }}"
   winrm_timeout         = "8h"
   winrm_username        = "Administrator"
+  winrm_use_ssl         = "true"
+  winrm_insecure        = "true"
 }
 
 build {
@@ -209,12 +211,6 @@ provisioner "powershell" {
     elevated_password = "{{ packer_admin_password }}"
     elevated_user     = "Administrator"
     inline            = ["Write-Host \"Pausing before next stage\";Start-Sleep -Seconds ${var.upgrade_timeout}"]
-  }
-
-  provisioner "powershell" {
-    elevated_password = "{{ packer_admin_password }}"
-    elevated_user     = "Administrator"
-    script            = "./extra/scripts/phase-5.ansible-config.ps1"
   }
 
   provisioner "powershell" {

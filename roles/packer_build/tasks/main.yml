@@ -36,11 +36,6 @@
     src: autounattend.xml.j2
     dest: C:\git\packer-hyperv\extra\files\gen2-2022\dc\Autounattend.xml
 
-- name: Copy Unattend file
-  ansible.windows.win_template:
-    src: unattend.xml.j2
-    dest: C:\git\packer-hyperv\extra\files\gen2-2022\dc\unattend.xml
-
 - name: Copy Packer template file
   ansible.windows.win_template:
     src: hv_win2022_g2.pkr.hcl.j2
@@ -68,7 +63,7 @@
     # Variables
     $template_file="./templates/hv_{{ packer_template }}.pkr.hcl"
     $var_file="C:\git\packer-vars\variables\packer-hyperv\variables_{{ packer_image }}.pkvars.hcl"
-    $packer_log=0
+    $packer_log=1
 
     if ((Test-Path -Path "$template_file") -and (Test-Path -Path "$var_file")) {
       Write-Output "Template and var file found"
