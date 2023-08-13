@@ -75,21 +75,21 @@ function whichWindows {
             Write-Output "Phase 1 [INFO] - Unknown version of Windows Server found."
         }
     }
-Write-Output "Phase-4 [START] - Updates"
+Write-Output "Phase-3 [START] - Updates"
 # let's check which windows
 whichWindows
 
   [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
   try {
-      Write-Output "Phase-4 [INFO] - Installing Nuget"
+      Write-Output "Phase-3 [INFO] - Installing Nuget"
       Get-PackageProvider -Name "Nuget" -ForceBootstrap -Verbose -ErrorAction Stop
   }
   catch {
-      Write-Output "Phase-4 [WARN] - Installation of nuget failed, exiting"
+      Write-Output "Phase-3 [WARN] - Installation of nuget failed, exiting"
   }
   # workaround for lastest PSWindowsUpdate
   try {
-      Write-Output "Phase-4 [INFO] - Installing PSWindowsUpdate"
+      Write-Output "Phase-3 [INFO] - Installing PSWindowsUpdate"
       Install-Module PSWindowsUpdate -Force -Confirm:$false -Verbose -ErrorAction Stop
       Import-Module PSWindowsUpdate
       Get-WUServiceManager
@@ -99,19 +99,19 @@ whichWindows
 
   }
   catch {
-      Write-Output "Phase-4 [INFO]- Installation of PSWindowsUpdate failed, exiting"
+      Write-Output "Phase-3 [INFO]- Installation of PSWindowsUpdate failed, exiting"
       exit (1)
   }
   try {
-          Write-Output "Phase-4 [INFO] - Updates pass started"
+          Write-Output "Phase-3 [INFO] - Updates pass started"
           Install-WindowsUpdate -AcceptAll -IgnoreReboot -ErrorAction SilentlyContinue
           #Get-WUHistory
-          Write-Output "Phase-4 [INFO] - Updates pass completed"
+          Write-Output "Phase-3 [INFO] - Updates pass completed"
   }
   catch {
-      Write-Output "Phase-4 [WARN] - Updates pass failed, not critical"
+      Write-Output "Phase-3 [WARN] - Updates pass failed, not critical"
       exit (0)
   }
 
-Write-Output "Phase-4 [END] - Updates"
+Write-Output "Phase-3 [END] - Updates"
 exit 0

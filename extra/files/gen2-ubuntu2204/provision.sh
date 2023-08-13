@@ -1,9 +1,7 @@
 #!/usr/bin/env bash
 # ubuntu version of provision.sh
 INSTALL_UPDATES=true
-INSTALL_PUPPET=true
 INSTALL_HYPERV=false
-INSTALL_COCKPIT=true
 INSTALL_ZABBIX=false
 STAMP_FILE="/etc/packerinfo"
 
@@ -16,14 +14,8 @@ while getopts :u:p:h:w:z:  option
       u)
         INSTALL_UPDATES="${OPTARG}"
         ;;
-      p)
-        INSTALL_PUPPET="${OPTARG}"
-        ;;
       h)
         INSTALL_HYPERV="${OPTARG}"
-        ;;
-      w)
-        INSTALL_COCKPIT="${OPTARG}"
         ;;
       z)
         INSTALL_ZABBIX="${OPTARG}"
@@ -34,9 +26,7 @@ while getopts :u:p:h:w:z:  option
       esac
     done
 echo "INSTALL_UPDATES = $INSTALL_UPDATES"
-echo "INSTALL_COCKPIT = $INSTALL_COCKPIT"
 echo "INSTALL_HYPERV  = $INSTALL_HYPERV"
-echo "INSTALL_PUPPET  = $INSTALL_PUPPET"
 echo "INSTALL_ZABBIX  = $INSTALL_ZABBIX"
 
 echo "Provisioning phase 1 - Starting: Mirror, SELinux and basic packages"
@@ -69,19 +59,7 @@ fi
 
 echo "Provisioning phase 1 - all done"
 
-echo "Provisioning phase 2 - Starting: Cockpit, Zabbix, Puppet"
-# cockpit repository
-if [ "$INSTALL_COCKPIT" == "true" ]; then
-  echo "Provisioning phase 2 - Cockpit"
-  export DEBIAN_FRONTEND=noninteractive
-  apt-get install cockpit -y -q
-  systemctl start cockpit.socket
-  systemctl enable --now cockpit.socket
-  systemctl status cockpit.socket
-else
-  echo "Provisioning phase 2 - skipping Cockpit"
-fi
-
+echo "Provisioning phase 2 - Starting: Zabbix"
 # zabbix
 if [ "$INSTALL_ZABBIX" == true ]; then
   echo "Provisioning phase 2 - Zabbix"
@@ -96,33 +74,6 @@ if [ "$INSTALL_ZABBIX" == true ]; then
 else
   echo "Provisioning phase 2 - skipping Zabbix agent"
 fi
-
-# puppet
-if [ "$INSTALL_PUPPET" == "true" ]; then
-
-    echo "Provisioning phase 2 - Puppet Agent"
-    # puppet 7.x repository
-    export DEBIAN_FRONTEND=noninteractive
-    wget https://apt.puppet.com/puppet7-release-focal.deb
-    dpkg -i puppet7-release-focal.deb
-    rm -rfv puppet7-release-focal.deb
-    apt-get update -y
-
-    apt-get -y install puppet-agent
-    echo "Provisioning phase 2 - Puppet Agent cleaning"
-    systemctl stop puppet
-    systemctl disable puppet
-    if [ -d /etc/puppetlabs/puppet/ssl ]; then
-        rm -rf /etc/puppetlabs/puppet/ssl
-    fi
-
-    if [ -f /tmp/puppet.conf ]; then
-        mv /tmp/puppet.conf /etc/puppetlabs/puppet/puppet.conf
-    fi
-else
-    echo "Provisioning phase 2 - Skipping Puppet agent"
-fi
-echo "Provisioning phase 2 - Done"
 
 echo "Provisioning phase 3 - Starting: Extra packages, timezones, neofetch, firewalld, settings"
 # misc
@@ -147,7 +98,7 @@ if [ -f /tmp/motd.sh ]; then
 fi
 
 if [ "$INSTALL_HYPERV" == "true" ]; then
-  echo "Provisioning phase 3 - Hyper-V/SCVMM Daemons"
+  echo "Provisioning phase 3 - Hyper-V Daemons"
   # Hyper-v daemons
    export DEBIAN_FRONTEND=noninteractive
    apt-get -y install linux-image-virtual linux-tools-virtual linux-cloud-tools-virtual
@@ -160,7 +111,7 @@ if [ "$INSTALL_HYPERV" == "true" ]; then
     /tmp/install "$(ls /tmp/scvmm*.x64.tar)"
   fi
 else
-  echo "Provisioning phase 3 - Skipping Hyper-V/SCVMM Daemons"
+  echo "Provisioning phase 3 - Skipping Hyper-V Daemons"
 fi
 
 echo "Provisioning phase 3 - Firewalld"

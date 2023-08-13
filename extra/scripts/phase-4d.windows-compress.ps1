@@ -1,4 +1,4 @@
-Write-Output "Phase-5d [START] - Cleaning/zeroing/compacting"
+Write-Output "Phase-4d [START] - Cleaning/zeroing/compacting"
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
 # Clean WU downloads

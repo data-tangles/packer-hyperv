@@ -7,37 +7,37 @@ param (
   [string] $configDockerLocation = "C:\ProgramData\Docker\config"
 )
 
-Write-Output "Phase 5b [START] - Start Phase 5b-Docker"
+Write-Output "Phase 4b [START] - Start Phase 4b-Docker"
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-Write-Output "Phase 5b [INFO] - Required Version of docker is : $requiredVersion"
-Write-Output "Phase 5b [INFO] - Install compose is set to     : $installCompose"
-Write-Output "Phase 5b [INFO] - Docker compose is set to      : $composeVersion"
-Write-Output "Phase 5b [INFO] - Docker location is set to     : $dockerLocation"
+Write-Output "Phase 4b [INFO] - Required Version of docker is : $requiredVersion"
+Write-Output "Phase 4b [INFO] - Install compose is set to     : $installCompose"
+Write-Output "Phase 4b [INFO] - Docker compose is set to      : $composeVersion"
+Write-Output "Phase 4b [INFO] - Docker location is set to     : $dockerLocation"
 
 try {
-  Write-Output "Phase 5b [INFO] - Install Dockermsftprovider"
+  Write-Output "Phase 4b [INFO] - Install Dockermsftprovider"
   Install-Module -Name DockerMsftProvider -Repository PSGallery -Confirm:$false -Force
   Update-Module DockerMsftProvider -Force -Confirm:$false
 }
 catch {
-  Write "Phase 5b [ERROR] - Install/Update module problem"
+  Write "Phase 4b [ERROR] - Install/Update module problem"
   exit (1)
 }
-Write-Output "Phase 5b [INFO] - Install Dockermsftprovider succesful"
+Write-Output "Phase 4b [INFO] - Install Dockermsftprovider succesful"
 try {
-  Write-Output "Phase 5b [INFO] - Install Docker package"
+  Write-Output "Phase 4b [INFO] - Install Docker package"
   # display all versions
-  Write-Output "Phase 5b [INFO] - Display all Docker packages"
+  Write-Output "Phase 4b [INFO] - Display all Docker packages"
   Find-Package -providerName DockerMsftProvider -AllVersions
   # install version
   Install-Package -Name docker -ProviderName DockerMsftProvider -RequiredVersion $RequiredVersion -Confirm:$false -Force
   Set-Service -Name docker -StartupType Automatic
 }
 catch {
-  Write "Phase 5b [ERROR] - Install-Package Docker problem"
+  Write "Phase 4b [ERROR] - Install-Package Docker problem"
   exit (1)
 }
-Write-Output "Phase 5b [INFO] - Install Docker package successful"
+Write-Output "Phase 4b [INFO] - Install Docker package successful"
 
 if ($installCompose) {
   try {
@@ -50,17 +50,17 @@ if ($installCompose) {
 
   }
   catch {
-    Write "Phase 5b [ERROR] - Install docker-compose problem"
+    Write "Phase 4b [ERROR] - Install docker-compose problem"
     exit (1)
   }
 }
 
 If (! $dockerLocation) {
-  Write-Output "Phase 5b [INFO] - Not changing default docker location"
+  Write-Output "Phase 4b [INFO] - Not changing default docker location"
 }
 else {
   try {
-      Write-Output "Phase 5b [INFO] - changing default docker location"
+      Write-Output "Phase 4b [INFO] - changing default docker location"
       Stop-Service docker -Force
       $dataRoot=@{ "data-root"="$dockerLocation" }
       if (! (Test-Path -Path $configDockerLocation )) {
@@ -74,5 +74,5 @@ else {
 
   }
 }
-Write-Output "Phase 5b [END] - End Phase 5b"
+Write-Output "Phase 4b [END] - End Phase 4b"
 

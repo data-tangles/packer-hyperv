@@ -124,12 +124,6 @@ build {
     script            = "./extra/scripts/phase-2.ps1"
   }
 
-  provisioner "powershell" {
-    elevated_password = "password"
-    elevated_user     = "Administrator"
-    script            = "./extra/scripts/phase-3.ps1"
-  }
-
   provisioner "windows-restart" {
     pause_before          = "1m0s"
     restart_check_command = "powershell -command \"& {Write-Output 'restarted.'}\""
@@ -139,7 +133,7 @@ build {
   provisioner "powershell" {
     elevated_password = "password"
     elevated_user     = "Administrator"
-    script            = "./extra/scripts/phase-4.windows-updates.ps1"
+    script            = "./extra/scripts/phase-3.windows-updates.ps1"
   }
 
   provisioner "windows-restart" {
