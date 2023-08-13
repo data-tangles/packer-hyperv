@@ -8,7 +8,7 @@ $isoList = @(
             "./extra/files/gen2-2022/dc/autounattend.xml",
             "./extra/scripts/bootstrap.ps1"
         )
-    },
+    }
 )
 
 
