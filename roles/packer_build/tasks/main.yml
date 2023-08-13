@@ -46,6 +46,12 @@
     src: hv_win2022_g2.pkr.hcl.j2
     dest: C:\git\packer-hyperv\templates\hv_win2022_g2.pkr.hcl
 
+- name: Build Gen2 ISO
+  ansible.windows.win_shell: |
+    .\unattend-iso-build.ps1
+  args:
+    chdir: C:\git\packer-hyperv\extra\scripts\hyper-v
+
 - name: Install required Packer plugins
   ansible.windows.win_shell: |
     packer init --upgrade config.pkr.hcl
