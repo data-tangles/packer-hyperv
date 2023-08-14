@@ -98,7 +98,6 @@ if ($global:os -eq '2016') {
 # features and firewall rules common for all Windows Servers
 try {
     Install-WindowsFeature NET-Framework-45-Core,Telnet-Client,RSAT-Role-Tools -IncludeManagementTools
-    Install-WindowsFeature SNMP-Service,SNMP-WMI-Provider -IncludeManagementTools
     Enable-NetFirewallRule -DisplayGroup "Remote Desktop" -Verbose
     Enable-NetFirewallRule -DisplayGroup "File and Printer Sharing" -Verbose
     Enable-NetFirewallRule -DisplayGroup "Remote Service Management" -Verbose
