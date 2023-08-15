@@ -36,6 +36,11 @@
     src: autounattend.xml.j2
     dest: C:\git\packer-hyperv\extra\files\gen2-2022\dc\Autounattend.xml
 
+- name: Copy Unattend file
+  ansible.windows.win_template:
+    src: unattend.xml.j2
+    dest: C:\git\packer-hyperv\extra\files\gen2-2022\dc\unattend.xml
+
 - name: Copy Packer template file
   ansible.windows.win_template:
     src: hv_win2022_g2.pkr.hcl.j2
