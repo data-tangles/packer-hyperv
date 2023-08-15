@@ -34,7 +34,7 @@
 - name: Copy Autounattend file
   ansible.windows.win_template:
     src: autounattend.xml.j2
-    dest: C:\git\packer-hyperv\extra\files\gen2-2022\dc\Autounattend.xml
+    dest: C:\git\packer-hyperv\extra\files\gen2-2022\dc\autounattend.xml
 
 - name: Copy Unattend file
   ansible.windows.win_template:
