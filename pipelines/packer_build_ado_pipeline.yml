@@ -21,16 +21,13 @@ parameters:
   default: win2022_dc
   values:
   - ubuntu2204
-  - win2022_dc_vagrant
   - win2022_dc
-  - win2022_std_vagrant
   - win2022_std
 - name: packerTemplate
   displayName: Packer Template
   default: win2022_g2
   values:
     - ubuntu2204_g2
-    - win2022_g2_vagrant
     - win2022_g2
 - name: windowsKeySelection
   displayName: Windows Key Selection
