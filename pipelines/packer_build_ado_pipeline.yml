@@ -49,6 +49,7 @@ stages:
     - job: 'packerbuild'
       displayName: 'Packer Build'
       pool: ${{ parameters.agentPool }}
+      timeoutInMinutes: 180
 
       steps:
       - task: Ansible@0
