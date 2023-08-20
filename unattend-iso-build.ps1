@@ -7,8 +7,7 @@ $isoList = @(
         Files    = @(
             "./extra/files/gen2-2022/dc/autounattend.xml",
             "./extra/files/gen2-2022/dc/unattend.xml",
-            "./extra/scripts/hyper-v/bootstrap.ps1",
-            "./extra/scripts/hyper-v/winrm-config.ps1"
+            "./extra/scripts/hyper-v/bootstrap.ps1"
         )
     }
 )
