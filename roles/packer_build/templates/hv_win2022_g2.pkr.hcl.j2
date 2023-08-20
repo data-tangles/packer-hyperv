@@ -85,7 +85,6 @@ source "hyperv-iso" "vm" {
   communicator          = "winrm"
   cpus                  = "${var.cpus}"
   disk_size             = "${var.disk_size}"
-  enable_dynamic_memory = "true"
   enable_secure_boot    = false
   generation            = 2
   guest_additions_mode  = "disable"
