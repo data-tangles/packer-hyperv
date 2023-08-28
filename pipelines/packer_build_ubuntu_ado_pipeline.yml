@@ -1,0 +1,46 @@
+variables:
+- group: packer-hyperv-variables
+
+parameters:
+- name: agentPool
+  displayName: 'Agent Pool Selection'
+  type: string
+  default: Self-Hosted
+  values:
+  - Self-Hosted
+  - Oracle-Cloud
+- name: nodeSelection
+  displayName: 'Ansible Node Selection'
+  type: string
+  default: host_01
+  values:
+  - host_01
+  - host_02
+
+trigger:
+- none
+
+stages:
+
+- stage: 'packerbuild'
+  dependsOn: []
+  displayName: 'Packer Build'
+
+  jobs:
+    - job: 'packerbuild'
+      displayName: 'Packer Build'
+      pool: ${{ parameters.agentPool }}
+      timeoutInMinutes: 180
+
+      steps:
+      - task: Ansible@0
+        displayName: Packer Binary Install
+        inputs:
+          ansibleInterface: 'agentMachine'
+          playbookPathOnAgentMachine: '$(System.DefaultWorkingDirectory)/packer_build_ubuntu.yml'
+          inventoriesAgentMachine: 'file'
+          inventoryFileOnAgentMachine: '/ansible/inventory/prod/windows.ini'
+          args: '--extra-vars "nodes=${{ parameters.nodeSelection }} packer_image=ubuntu2204 packer_template=ubuntu2204_g2 pat=$PAT"'
+          failOnStdErr: false
+        env:
+          PAT: $(pat)

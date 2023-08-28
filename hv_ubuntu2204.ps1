@@ -6,9 +6,9 @@ $startDTM = (Get-Date)
 # Variables
 $template_file = "./templates/hv_ubuntu2204_g2.pkr.hcl"
 $var_file = "C:\git\packer-vars\variables\packer-hyperv\variables_ubuntu2204.pkvars.hcl"
-$machine = "Ubuntu 22.04"
+$machine = "Ubuntu 22.04 Gen-2"
 $packer_log = 1
-$packer_log_path = "packer_log_$($machine).txt"
+$packer_log_path = "packer_log_hv_ubuntu2204_g2.txt"
 
 if ((Test-Path -Path "$template_file") -and (Test-Path -Path "$var_file")) {
   Write-Output "Template and var file found"

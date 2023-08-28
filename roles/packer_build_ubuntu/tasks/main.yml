@@ -31,26 +31,10 @@
   args:
     chdir: C:\git\
 
-- name: Copy Autounattend file
-  ansible.windows.win_template:
-    src: autounattend.xml.j2
-    dest: C:\git\packer-hyperv\extra\files\gen2-2022\dc\autounattend.xml
-
-- name: Copy Unattend file
-  ansible.windows.win_template:
-    src: unattend.xml.j2
-    dest: C:\git\packer-hyperv\extra\files\gen2-2022\dc\unattend.xml
-
 - name: Copy Packer template file
   ansible.windows.win_template:
-    src: hv_win2022_g2.pkr.hcl.j2
-    dest: C:\git\packer-hyperv\templates\hv_win2022_g2.pkr.hcl
-
-- name: Build Gen2 ISO
-  ansible.windows.win_shell: |
-    .\unattend-iso-build.ps1
-  args:
-    chdir: C:\git\packer-hyperv
+    src: hv_ubuntu2204_g2.pkr.hcl.j2
+    dest: C:\git\packer-hyperv\templates\hv_ubuntu2204_g2.pkr.hcl
 
 - name: Install required Packer plugins
   ansible.windows.win_shell: |
@@ -66,36 +50,37 @@
     $startDTM = (Get-Date)
 
     # Variables
-    $template_file="./templates/hv_{{ packer_template }}.pkr.hcl"
-    $var_file="C:\git\packer-vars\variables\packer-hyperv\variables_{{ packer_image }}.pkvars.hcl"
-    $packer_log=1
-    $packer_log_path = "packer_log_$($machine).txt"
+    $template_file = "./templates/hv_ubuntu2204_g2.pkr.hcl"
+    $var_file = "C:\git\packer-vars\variables\packer-hyperv\variables_ubuntu2204.pkvars.hcl"
+    $machine = "Ubuntu 22.04 Gen-2"
+    $packer_log = 1
+    $packer_log_path = "packer_log_hv_ubuntu2204_g2.txt"
 
     if ((Test-Path -Path "$template_file") -and (Test-Path -Path "$var_file")) {
       Write-Output "Template and var file found"
-      Write-Output "Building: ${{ packer_image }}"
-      try {
-        $env:PACKER_LOG=$packer_log
-        $env:PACKER_LOG_PATH=$packer_log_path
-        packer validate -var-file="$var_file" "$template_file"
-      }
-      catch {
-        Write-Output "Packer validation failed, exiting."
-        exit (-1)
-      }
-      try {
-        $env:PACKER_LOG=$packer_log
-        $env:PACKER_LOG_PATH=$packer_log_path
-        packer version
-        packer build --force -var-file="$var_file" "$template_file"
-      }
-      catch {
-        Write-Output "Packer build failed, exiting."
-        exit (-1)
+      Write-Output "Building: $machine"
+    try {
+      $env:PACKER_LOG=$packer_log
+      $env:PACKER_LOG_PATH=$packer_log_path
+      packer validate -var-file="$var_file" "$template_file"
+    }
+    catch {
+      Write-Output "Packer validation failed, exiting."
+      exit (-1)
+    }
+    try {
+      $env:PACKER_LOG=$packer_log
+      $env:PACKER_LOG_PATH=$packer_log_path
+      packer version
+      packer build --force -var-file="$var_file" "$template_file"
+    }
+    catch {
+      Write-Output "Packer build failed, exiting."
+      exit (-1)
       }
     }
     else {
-      Write-Output "Template or Var file not found - exiting"
+      Write-Output "Template or var file not found - exiting"
       exit (-1)
     }
 
