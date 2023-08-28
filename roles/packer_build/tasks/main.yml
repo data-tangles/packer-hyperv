@@ -107,7 +107,7 @@
 
 - name: Output Packer Build info
   ansible.builtin.debug:
-    packer_build_output.stdout
+    msg: packer_build_output.stdout
 
 - name: Remove Git directory
   ansible.windows.win_file:
