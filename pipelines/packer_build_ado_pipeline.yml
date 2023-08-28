@@ -58,7 +58,7 @@ stages:
           ansibleInterface: 'agentMachine'
           playbookPathOnAgentMachine: '$(System.DefaultWorkingDirectory)/packer_build.yml'
           inventoriesAgentMachine: 'file'
-          inventoryFileOnAgentMachine: '/ansible/inventory/prod/hyper_v.ini'
+          inventoryFileOnAgentMachine: '/ansible/inventory/prod/windows.ini'
           args: '--extra-vars "nodes=${{ parameters.nodeSelection }} packer_image=${{ parameters.packerBuildImage }} packer_template=${{ parameters.packerTemplate }} pat=$PAT  product_key=$PRODUCT_KEY packer_admin_password=$PACKER_ADMIN_PASSWORD"'
           failOnStdErr: false
         env:
