@@ -1,117 +1,83 @@
-#https://www.petri.com/manage-windows-updates-with-powershell-module
-#install Windows Updates
-# For test run disable updates
-# exit
-$global:os=""
-function whichWindows {
-    $version=(Get-WMIObject win32_operatingsystem).name
-     if ($version) {
-        switch -Regex ($version) {
-            '(Server 2016)' {
-                $global:os="2016"
-                printWindowsVersion
-            }
-            '(Server 2019)' {
-                $global:os="2019"
-                printWindowsVersion
-            }
-            '(Server 2022)' {
-                    $global:os="2022"
-                    printWindowsVersion
-            }
-            '(Microsoft Windows Server Standard|Microsoft Windows Server Datacenter)'{
-                $ws_version=(Get-WmiObject win32_operatingsystem).buildnumber
-                    switch -Regex ($ws_version) {
-                        '16299' {
-                            $global:os="1709"
-                            printWindowsVersion
-                        }
-                        '17134' {
-                            $global:os="1803"
-                            printWindowsVersion
-                        }
-                        '17763' {
-                            $global:os="1809"
-                            printWindowsVersion
-                        }
-                        '18362' {
-                            $global:os="1903"
-                            printWindowsVersion
-                        }
-                        '18363' {
-                            $global:os="1909"
-                            printWindowsVersion
-                        }
-                        '19041' {
-                            $global:os="2004"
-                            printWindowsVersion
-                        }
-                        '19042' {
-                            $global:os="20H2"
-                            printWindowsVersion
-                        }
-                    }
-            }
-            '(Windows 10)' {
-                Write-Output 'Phase 1 [INFO] - Windows 10 found'
-                $global:os="10"
-                printWindowsVersion
-            }
-            default {
-                Write-Output "unknown"
-                printWindowsVersion
-            }
-        }
-     }
-     else {
-         throw "Buildnumber empty, cannot continue"
-     }
-    }
-    function printWindowsVersion {
-        if ($global:os) {
-            Write-Output "Phase 1 [INFO] - Windows Server "$global:os" found."
-        }
-        else {
-            Write-Output "Phase 1 [INFO] - Unknown version of Windows Server found."
-        }
-    }
-Write-Output "Phase-3 [START] - Updates"
-# let's check which windows
-whichWindows
+# Source : https://github.com/hashicorp/best-practices/blob/master/packer/scripts/windows/install_windows_updates.ps1
+# Silence progress bars in PowerShell, which can sometimes feed back strange
+# XML data to the Packer output.
+$ProgressPreference = "SilentlyContinue"
 
-  [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-  try {
-      Write-Output "Phase-3 [INFO] - Installing Nuget"
-      Get-PackageProvider -Name "Nuget" -ForceBootstrap -Verbose -ErrorAction Stop
-  }
-  catch {
-      Write-Output "Phase-3 [WARN] - Installation of nuget failed, exiting"
-  }
-  # workaround for lastest PSWindowsUpdate
-  try {
-      Write-Output "Phase-3 [INFO] - Installing PSWindowsUpdate"
-      Install-Module PSWindowsUpdate -Force -Confirm:$false -Verbose -ErrorAction Stop
-      Import-Module PSWindowsUpdate
-      Get-WUServiceManager
-      if ($global:os -ne '2022') {
-        Add-WUServiceManager -ServiceID 7971f918-a847-4430-9279-4a52d1efe18d -Confirm:$false
+Write-Output "***** Starting PSWindowsUpdate Installation"
+
+Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
+Install-Module -Name PSWindowsUpdate -Force
+
+if (Get-ChildItem "C:\Program Files\WindowsPowerShell\Modules\PSWindowsUpdate") {
+    Write-Output "***** PSWindowsUpdate installed successfully"
+}
+
+Write-Output "***** Starting Windows Update Installation"
+
+Try {
+    Import-Module PSWindowsUpdate -ErrorAction Stop
+}
+Catch {
+    Write-Error "***** Unable to Import PSWindowsUpdate"
+    exit 1
+}
+
+if (Test-Path C:\Windows\Temp\PSWindowsUpdate.log) {
+    Remove-Item -Path C:\Windows\Temp\PSWindowsUpdate.log
+}
+
+try {
+    $updateCommand = { Import-Module PSWindowsUpdate; Get-WUInstall -AcceptAll -Install -IgnoreReboot | Out-File C:\Windows\Temp\PSWindowsUpdate.log }
+    $TaskName = "PackerUpdate"
+
+    $User = [Security.Principal.WindowsIdentity]::GetCurrent()
+    $Scheduler = New-Object -ComObject Schedule.Service
+
+    $Task = $Scheduler.NewTask(0)
+
+    $RegistrationInfo = $Task.RegistrationInfo
+    $RegistrationInfo.Description = $TaskName
+    $RegistrationInfo.Author = $User.Name
+
+    $Settings = $Task.Settings
+    $Settings.Enabled = $True
+    $Settings.StartWhenAvailable = $True
+    $Settings.Hidden = $False
+
+    $Action = $Task.Actions.Create(0)
+    $Action.Path = "powershell"
+    $Action.Arguments = "-Command $updateCommand"
+
+    $Task.Principal.RunLevel = 1
+
+    $Scheduler.Connect()
+    $RootFolder = $Scheduler.GetFolder("\")
+    $RootFolder.RegisterTaskDefinition($TaskName, $Task, 6, "SYSTEM", $Null, 1) | Out-Null
+    $RootFolder.GetTask($TaskName).Run(0) | Out-Null
+
+    Write-Output "***** The Windows Update log will be displayed below this message. No additional output indicates no updates were needed."
+    do {
+        sleep 1
+        if ((Test-Path C:\Windows\Temp\PSWindowsUpdate.log) -and $script:reader -eq $null) {
+            $script:stream = New-Object System.IO.FileStream -ArgumentList "C:\Windows\Temp\PSWindowsUpdate.log", "Open", "Read", "ReadWrite"
+            $script:reader = New-Object System.IO.StreamReader $stream
+        }
+        if ($script:reader -ne $null) {
+            $line = $Null
+            do {
+                $script:reader.ReadLine()
+                $line = $script:reader.ReadLine()
+                Write-Output $line
+            } while ($line -ne $null)
+        }
+    } while ($Scheduler.GetRunningTasks(0) | Where-Object { $_.Name -eq $TaskName })
+}
+finally {
+    $RootFolder.DeleteTask($TaskName, 0)
+    [System.Runtime.Interopservices.Marshal]::ReleaseComObject($Scheduler) | Out-Null
+    if ($script:reader -ne $null) {
+        $script:reader.Close()
+        $script:stream.Dispose()
     }
-
-  }
-  catch {
-      Write-Output "Phase-3 [INFO]- Installation of PSWindowsUpdate failed, exiting"
-      exit (1)
-  }
-  try {
-          Write-Output "Phase-3 [INFO] - Updates pass started"
-          Install-WindowsUpdate -AcceptAll -IgnoreReboot -ErrorAction SilentlyContinue
-          #Get-WUHistory
-          Write-Output "Phase-3 [INFO] - Updates pass completed"
-  }
-  catch {
-      Write-Output "Phase-3 [WARN] - Updates pass failed, not critical"
-      exit (0)
-  }
-
-Write-Output "Phase-3 [END] - Updates"
-exit 0
+}
+Write-Output "***** Ended Windows Update Installation"
