@@ -1,0 +1,61 @@
+variables:
+- group: packer-hyperv-variables
+
+trigger:
+- none
+
+schedules:
+  - cron: '0 19 15 * *'
+    displayName: 'Monthly Packer Build'
+
+stages:
+
+- stage: 'host_01_packerbuild'
+  dependsOn: []
+  displayName: 'Host 01 Packer Build'
+
+  jobs:
+    - job: 'host_01_packerbuild'
+      displayName: 'Host 01 Packer Build'
+      pool: Self-Hosted
+      timeoutInMinutes: 180
+
+      steps:
+      - task: Ansible@0
+        displayName: Packer Binary Install
+        inputs:
+          ansibleInterface: 'agentMachine'
+          playbookPathOnAgentMachine: '$(System.DefaultWorkingDirectory)/packer_build.yml'
+          inventoriesAgentMachine: 'file'
+          inventoryFileOnAgentMachine: '/ansible/inventory/prod/windows.ini'
+          args: '--extra-vars "nodes=host_01 packer_image=win2022_dc packer_template=win2022_g2 pat=$PAT product_key=$PRODUCT_KEY packer_admin_password=$PACKER_ADMIN_PASSWORD"'
+          failOnStdErr: false
+        env:
+          PAT: $(pat)
+          PRODUCT_KEY: $(host_01_key)
+          PACKER_ADMIN_PASSWORD: $(packer_admin_password)
+
+- stage: 'host_02_packerbuild'
+  dependsOn: []
+  displayName: 'Host 02 Packer Build'
+
+  jobs:
+    - job: 'host_02_packerbuild'
+      displayName: 'Host 02 Packer Build'
+      pool: Self-Hosted
+      timeoutInMinutes: 180
+
+      steps:
+      - task: Ansible@0
+        displayName: Packer Binary Install
+        inputs:
+          ansibleInterface: 'agentMachine'
+          playbookPathOnAgentMachine: '$(System.DefaultWorkingDirectory)/packer_build.yml'
+          inventoriesAgentMachine: 'file'
+          inventoryFileOnAgentMachine: '/ansible/inventory/prod/windows.ini'
+          args: '--extra-vars "nodes=host_02 packer_image=win2022_dc packer_template=win2022_g2 pat=$PAT product_key=$PRODUCT_KEY packer_admin_password=$PACKER_ADMIN_PASSWORD"'
+          failOnStdErr: false
+        env:
+          PAT: $(pat)
+          PRODUCT_KEY: $(host_02_key)
+          PACKER_ADMIN_PASSWORD: $(packer_admin_password)
