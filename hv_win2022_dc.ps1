@@ -8,7 +8,7 @@ $template_file = "./templates/hv_win2022_g2.pkr.hcl"
 $var_file = "C:\git\packer-vars\variables\packer-hyperv\variables_win2022_dc.pkvars.hcl"
 $machine = "Windows Server 2022 Datacenter Gen-2"
 $packer_log = 1
-$packer_log_path = "packer_log_$($machine).txt"
+$packer_log_path = "packer_log_hv_win2022_g2.txt"
 
 if ((Test-Path -Path "$template_file") -and (Test-Path -Path "$var_file")) {
   Write-Output "Template and var file found"
