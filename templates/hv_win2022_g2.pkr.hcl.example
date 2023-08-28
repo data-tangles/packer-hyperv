@@ -8,7 +8,6 @@ variable "cpus" {
   default = "1"
 }
 
-
 variable "disk_size" {
   type    = string
   default = ""
@@ -54,17 +53,18 @@ variable "sysprep_unattended" {
   default = ""
 }
 
+
+variable "vagrantfile_template" {
+  type    = string
+  default = ""
+}
+
 variable "upgrade_timeout" {
   type    = string
   default = ""
 }
 
 variable "vagrant_sysprep_unattended" {
-  type    = string
-  default = ""
-}
-
-variable "vagrantfile_template" {
   type    = string
   default = ""
 }
@@ -83,7 +83,7 @@ source "hyperv-iso" "vm" {
   boot_command          = ["a<enter><wait>a<enter><wait>a<enter><wait>a<enter>"]
   boot_wait             = "1s"
   communicator          = "winrm"
-  cpus                  ="${var.cpus}"
+  cpus                  = "${var.cpus}"
   disk_size             = "${var.disk_size}"
   enable_dynamic_memory = "true"
   enable_secure_boot    = false
@@ -95,7 +95,8 @@ source "hyperv-iso" "vm" {
   output_directory      = "${var.output_directory}"
   secondary_iso_images  = ["${var.secondary_iso_image}"]
   shutdown_timeout      = "30m"
-  skip_export           = false
+  headless              = true
+  skip_export           = true
   switch_name           = "${var.switch_name}"
   temp_path             = "."
   vlan_id               = "${var.vlan_id}"
@@ -124,6 +125,12 @@ build {
     script            = "./extra/scripts/phase-2.ps1"
   }
 
+  provisioner "powershell" {
+    elevated_password = "password"
+    elevated_user     = "Administrator"
+    script            = "./extra/scripts/phase-3.ps1"
+  }
+
   provisioner "windows-restart" {
     pause_before          = "1m0s"
     restart_check_command = "powershell -command \"& {Write-Output 'restarted.'}\""
@@ -133,7 +140,7 @@ build {
   provisioner "powershell" {
     elevated_password = "password"
     elevated_user     = "Administrator"
-    script            = "./extra/scripts/phase-3.windows-updates.ps1"
+    script            = "./extra/scripts/phase-4.windows-updates.ps1"
   }
 
   provisioner "windows-restart" {
@@ -149,6 +156,25 @@ build {
   }
 
   provisioner "powershell" {
+    elevated_password = "password"
+    elevated_user     = "Administrator"
+    pause_before      = "30s"
+    script            = "./extra/scripts/phase-4.windows-updates.ps1"
+  }
+
+  provisioner "windows-restart" {
+    pause_before          = "30s"
+    restart_check_command = "powershell -command \"& {Write-Output 'restarted.'}\""
+    restart_timeout       = "2h"
+  }
+
+  provisioner "powershell" {
+    elevated_password = "password"
+    elevated_user     = "Administrator"
+    inline            = ["Write-Host \"Pausing before next stage\";Start-Sleep -Seconds ${var.upgrade_timeout}"]
+  }
+
+provisioner "powershell" {
     elevated_password = "password"
     elevated_user     = "Administrator"
     pause_before      = "30s"
@@ -184,12 +210,6 @@ build {
     elevated_password = "password"
     elevated_user     = "Administrator"
     inline            = ["Write-Host \"Pausing before next stage\";Start-Sleep -Seconds ${var.upgrade_timeout}"]
-  }
-
-  provisioner "powershell" {
-    elevated_password = "password"
-    elevated_user     = "Administrator"
-    script            = "./extra/scripts/phase-5a.software.ps1"
   }
 
   provisioner "powershell" {
@@ -200,16 +220,10 @@ build {
 
   provisioner "file" {
     destination = "C:\\Windows\\System32\\Sysprep\\unattend.xml"
-    source      = "${var.vagrant_sysprep_unattended}"
+    source      = "${var.sysprep_unattended}"
   }
 
   provisioner "powershell" {
     inline = ["Write-Output Phase-5-Deprovisioning", "if (!(Test-Path -Path $Env:SystemRoot\\system32\\Sysprep\\unattend.xml)){ Write-Output 'No file';exit (10)}", "& $Env:SystemRoot\\System32\\Sysprep\\Sysprep.exe /oobe /generalize /shutdown /quiet /unattend:C:\\Windows\\system32\\sysprep\\unattend.xml"]
-  }
-
-  post-processor "vagrant" {
-    keep_input_artifact  = true
-    output               = "${var.output_vagrant}"
-    vagrantfile_template = "${var.vagrantfile_template}"
   }
 }

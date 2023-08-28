@@ -6,8 +6,8 @@ $isoList = @(
         FileName = "./extra/files/gen2-2022/dc/secondary.iso";
         Files    = @(
             "./extra/files/gen2-2022/dc/autounattend.xml",
-            "./extra/scripts/hyper-v/bootstrap.ps1",
-            "./extra/scripts/hyper-v/winrm-config.ps1"
+            "./extra/files/gen2-2022/dc/unattend.xml",
+            "./extra/scripts/hyper-v/bootstrap.ps1"
         )
     }
 )

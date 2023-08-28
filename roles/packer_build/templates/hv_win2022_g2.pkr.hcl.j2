@@ -85,7 +85,6 @@ source "hyperv-iso" "vm" {
   communicator          = "winrm"
   cpus                  = "${var.cpus}"
   disk_size             = "${var.disk_size}"
-  enable_dynamic_memory = "true"
   enable_secure_boot    = false
   generation            = 2
   guest_additions_mode  = "disable"
@@ -95,6 +94,7 @@ source "hyperv-iso" "vm" {
   output_directory      = "${var.output_directory}"
   secondary_iso_images  = ["${var.secondary_iso_image}"]
   shutdown_timeout      = "30m"
+  headless              = true
   skip_export           = true
   switch_name           = "${var.switch_name}"
   temp_path             = "."

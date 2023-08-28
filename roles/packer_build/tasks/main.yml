@@ -34,7 +34,12 @@
 - name: Copy Autounattend file
   ansible.windows.win_template:
     src: autounattend.xml.j2
-    dest: C:\git\packer-hyperv\extra\files\gen2-2022\dc\Autounattend.xml
+    dest: C:\git\packer-hyperv\extra\files\gen2-2022\dc\autounattend.xml
+
+- name: Copy Unattend file
+  ansible.windows.win_template:
+    src: unattend.xml.j2
+    dest: C:\git\packer-hyperv\extra\files\gen2-2022\dc\unattend.xml
 
 - name: Copy Packer template file
   ansible.windows.win_template:
@@ -64,12 +69,14 @@
     $template_file="./templates/hv_{{ packer_template }}.pkr.hcl"
     $var_file="C:\git\packer-vars\variables\packer-hyperv\variables_{{ packer_image }}.pkvars.hcl"
     $packer_log=1
+    $packer_log_path = "packer_log_$($machine).txt"
 
     if ((Test-Path -Path "$template_file") -and (Test-Path -Path "$var_file")) {
       Write-Output "Template and var file found"
       Write-Output "Building: ${{ packer_image }}"
       try {
         $env:PACKER_LOG=$packer_log
+        $env:PACKER_LOG_PATH=$packer_log_path
         packer validate -var-file="$var_file" "$template_file"
       }
       catch {
@@ -78,6 +85,7 @@
       }
       try {
         $env:PACKER_LOG=$packer_log
+        $env:PACKER_LOG_PATH=$packer_log_path
         packer version
         packer build --force -var-file="$var_file" "$template_file"
       }
