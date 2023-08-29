@@ -40,7 +40,7 @@ stages:
           playbookPathOnAgentMachine: '$(System.DefaultWorkingDirectory)/packer_build_ubuntu.yml'
           inventoriesAgentMachine: 'file'
           inventoryFileOnAgentMachine: '/ansible/inventory/prod/windows.ini'
-          args: '--extra-vars "nodes=${{ parameters.nodeSelection }} packer_image=ubuntu2204 packer_template=ubuntu2204_g2 pat=$PAT" -vvv'
+          args: '--extra-vars "nodes=${{ parameters.nodeSelection }} packer_image=ubuntu2204 packer_template=ubuntu2204_g2 pat=$PAT"'
           failOnStdErr: false
         env:
           PAT: $(pat)
