@@ -15,7 +15,7 @@
 
 - name: Clone Packer Hyper-V Repo
   ansible.windows.win_shell: |
-    git clone https://github.com/qman-being/packer-hyperv.git
+    git clone https://github.com/data-tangles/packer-hyperv.git
   args:
     chdir: C:\git\
 
@@ -27,7 +27,7 @@
 
 - name: Clone Packer Vars Repo
   ansible.windows.win_shell: |
-    git clone https://qman_being:{{ pat }}@github.com/qman-being/packer-vars.git
+    git clone https://data-tangles:{{ pat }}@github.com/data-tangles/packer-vars.git
   args:
     chdir: C:\git\
 
