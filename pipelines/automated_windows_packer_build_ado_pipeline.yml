@@ -7,6 +7,10 @@ trigger:
 schedules:
   - cron: '0 19 15 * *'
     displayName: 'Monthly Packer Build'
+    branches:
+      include:
+      - main
+    always: true
 
 stages:
 
